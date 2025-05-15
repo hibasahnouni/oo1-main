@@ -5,9 +5,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatWithUserByIdScreen extends StatefulWidget {
   static const String routeName = '/ChatWithUserByIdScreen';
-  const ChatWithUserByIdScreen({super.key, required this.userId});
+  const ChatWithUserByIdScreen({
+    super.key,
+    required this.userId,
+    required this.name,
+  });
   final String userId;
-
+  final String name;
   @override
   State<ChatWithUserByIdScreen> createState() => _ChatWithUserByIdScreenState();
 }
@@ -54,7 +58,7 @@ class _ChatWithUserByIdScreenState extends State<ChatWithUserByIdScreen> {
     }
   }
 
-  Future<void> sendMessage(String receiverId) async {
+  Future<void> sendMessage(String receiverId, String name1) async {
     final senderId = Supabase.instance.client.auth.currentUser?.id;
     final content = messageController.text.trim();
 
@@ -68,10 +72,24 @@ class _ChatWithUserByIdScreenState extends State<ChatWithUserByIdScreen> {
       await Supabase.instance.client.from('chat').upsert({
         'user1_id': senderId,
         'user2_id': receiverId,
+        'name1': name1,
+        'name2': Supabase.instance.client.auth.currentUser?.lastSignInAt,
         'last_message': content,
       });
     } catch (e) {
-      print('Error updating chat: $e');
+      print('Upsert failed, trying update: $e');
+
+      try {
+        await Supabase.instance.client
+            .from('chat')
+            .update({
+              'last_message': content,
+              'create_at': DateTime.now().toString(),
+            })
+            .match({'user1_id': senderId ?? '', 'user2_id': receiverId});
+      } catch (e) {
+        print('Update also failed: $e');
+      }
     }
 
     messageController.clear();
@@ -241,7 +259,7 @@ class _ChatWithUserByIdScreenState extends State<ChatWithUserByIdScreen> {
 
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => sendMessage(widget.userId),
+                      onTap: () => sendMessage(widget.userId, widget.name),
                       child: CircleAvatar(
                         radius: 22,
                         backgroundColor: Colors.blue.shade700,

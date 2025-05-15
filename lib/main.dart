@@ -79,11 +79,14 @@ class MyApp extends StatelessWidget {
 
             '/adminDashboard': (_) => AdminDashboard(),
             '/UserListScreen': (_) => UserListScreen(),
-            'ChatWithUserByIdScreen':(_)=>ChatWithUserByIdScreen(userId: '',),
-            'UserListScreen':(_)=>UserListScreen(),
+            'ChatWithUserByIdScreen':
+                (_) => ChatWithUserByIdScreen(userId: '', name: ''),
+            'UserListScreen': (_) => UserListScreen(),
             '/UserListScreen': (context) => UserListScreen(),
-            '/ChatWithUserByIdScreen': (context) => ChatWithUserByIdScreen(userId: ''),
-            ChatWithUserByIdScreen.routeName: (context)  =>  const ChatWithUserByIdScreen(userId: '',),
+            '/ChatWithUserByIdScreen':
+                (context) => ChatWithUserByIdScreen(userId: '', name: ''),
+            ChatWithUserByIdScreen.routeName:
+                (context) => const ChatWithUserByIdScreen(userId: '', name: ''),
             'TechnicalSupportScreen':
                 (context) => const TechnicalSupportScreen(),
             StudentContactScreen.routeName: (context) => StudentContactScreen(),
@@ -112,5 +115,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
